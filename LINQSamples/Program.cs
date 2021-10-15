@@ -15,7 +15,7 @@ namespace LINQSamples
 
         // Call a sample method
         //vm.GetAllLooping();
-        vm.Distinct();
+        vm.LINQContainsUsingComparer();
         // Display Product Collection
         foreach (var item in vm.Products) {
         Console.Write(item.ToString());

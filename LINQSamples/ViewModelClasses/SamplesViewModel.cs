@@ -9,16 +9,16 @@ namespace LINQSamples
   public class SamplesViewModel
   {
     
-    #region Constructor
-    public SamplesViewModel()
-    {
-        // Load all Product Data
-        Products = ProductRepository.GetAll();
-        Sales = SalesOrderDetailRepository.GetAll();
-    }
-    #endregion
+        #region Constructor
+        public SamplesViewModel()
+        {
+            // Load all Product Data
+            Products = ProductRepository.GetAll();
+            Sales = SalesOrderDetailRepository.GetAll();
+        }
+        #endregion
 
-    #region Properties
+        #region Properties
     public bool UseQuerySyntax { get; set; }
     public List<Product> Products { get; set; }
     public List<SalesOrderDetail> Sales { get; set; }
@@ -667,5 +667,103 @@ namespace LINQSamples
         }
         #endregion
 
+        #region All
+        /// <summary>
+        /// Use All() method to check if all elements in the collection satisfies a specific ceriteria or condition
+        /// </summary>
+        public void All()
+        {
+            string search = " ";
+            bool value;
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+                value = (from prod in Products
+                          select prod).All(prod => prod.Name.Contains(search));
+            }
+            else
+            {
+                // Method Syntax
+                value = Products.All(prod => prod.Name.Contains(search));
+            }
+            ResultText = $"Do all Name Properties contain a '{search}' ? {value}";
+            Products.Clear();
+        }
+        #endregion
+
+        #region Any
+        /// <summary>
+        /// Use Any() method to check if any elements in the collection satisfies a specific ceriteria or condition
+        /// </summary>
+        public void Any()
+        {
+            string search = "z";
+            bool value;
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+                value = (from prod in Products
+                         select prod).Any(prod => prod.Name.Contains(search));
+            }
+            else
+            {
+                // Method Syntax
+                value = Products.Any(prod => prod.Name.Contains(search));
+            }
+            ResultText = $"Do all Name Properties contain a '{search}'? {value}";
+            Products.Clear();
+        }
+        #endregion
+
+        #region LINQContains
+        /// <summary>
+        /// Use Contains() method to check if a collection contains a specific element
+        /// </summary>
+        public void LINQContains()
+        {
+            List<int> numbers = new List<int> { 1,2,3,4,5,6 };
+            bool value;
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+                value = (from num in numbers
+                         select num).Contains(3);
+            }
+            else
+            {
+                // Method Syntax
+                value = numbers.Contains(3);
+            }
+            ResultText = $"Is the number in collection ? {value}";
+            Products.Clear();
+        }
+        #endregion
+
+        #region LINQContainsUsingComparer
+        /// <summary>
+        /// Use Contains() method to check if a collection contains a specific 
+        /// object comparing to some property
+        /// </summary>
+        public void LINQContainsUsingComparer()
+        {
+            int search = 744;
+            bool value;
+            ProductIdComparer pc = new ProductIdComparer();
+            Product prodToFind = new Product { ProductID = search };
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+                value = (from prod in Products
+                         select prod).Contains(prodToFind, pc);
+            }
+            else
+            {
+                // Method Syntax
+                value = Products.Contains(prodToFind,pc);
+            }
+            ResultText = $"Product ID : {search} is in products collection? {value}";
+            Products.Clear();
+        }
+        #endregion
     }
 }

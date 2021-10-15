@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LINQSamples.RepositoryClasses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,7 @@ namespace LINQSamples
   public class SamplesViewModel
   {
     
-
-    #region Constructor
+        #region Constructor
     public SamplesViewModel()
     {
       // Load all Product Data
@@ -17,13 +17,13 @@ namespace LINQSamples
     }
     #endregion
 
-    #region Properties
+        #region Properties
     public bool UseQuerySyntax { get; set; }
     public List<Product> Products { get; set; }
     public string ResultText { get; set; }
     #endregion
 
-    #region GetAllLooping
+        #region GetAllLooping
     /// <summary>
     /// Put all products into a collection via looping, no LINQ
     /// </summary>
@@ -38,7 +38,7 @@ namespace LINQSamples
     }
     #endregion
 
-    #region GetAll
+        #region GetAll
     /// <summary>
     /// Put all products into a collection using LINQ
     /// </summary>
@@ -59,7 +59,7 @@ namespace LINQSamples
     }
     #endregion
 
-    #region GetSingleColumn
+        #region GetSingleColumn
     /// <summary>
     /// Select a single column
     /// </summary>
@@ -84,7 +84,7 @@ namespace LINQSamples
     }
     #endregion
 
-    #region GetSpecificColumns
+        #region GetSpecificColumns
     /// <summary>
     /// Select a few specific properties from products and create new Product objects
     /// </summary>
@@ -115,7 +115,7 @@ namespace LINQSamples
     }
     #endregion
 
-    #region AnonymousClass
+        #region AnonymousClass
     /// <summary>
     /// Create an anonymous class from selected product properties
     /// </summary>
@@ -161,7 +161,7 @@ namespace LINQSamples
     }
     #endregion
 
-    #region OrderBy
+        #region OrderBy
     /// <summary>
     /// Order products by Name
     /// </summary>
@@ -182,7 +182,7 @@ namespace LINQSamples
     }
     #endregion
 
-    #region OrderByDescending Method
+        #region OrderByDescending Method
     /// <summary>
     /// Order products by name in descending order
     /// </summary>
@@ -203,7 +203,7 @@ namespace LINQSamples
     }
     #endregion
 
-    #region OrderByTwoFields Method
+        #region OrderByTwoFields Method
     /// <summary>
     /// Order products by Color descending, then Name
     /// </summary>
@@ -224,6 +224,426 @@ namespace LINQSamples
 
       ResultText = $"Total Products: {Products.Count}";
     }
-    #endregion
-  }
+        #endregion  
+
+        #region Where Expression Method
+            /// <summary>
+            /// select some products its Name starts with L
+            /// </summary>
+            public void WhereExpression()
+            {
+                string search = "Red";
+            
+                if (UseQuerySyntax)
+                {
+                    // Query Syntax
+                    Products = (from prod in Products
+                                select prod).ByColor(search).ToList();
+                }
+                else
+                {
+                    // Method Syntax
+                    Products = Products.ByColor(search).ToList();
+                }
+
+                ResultText = $"Total Products: {Products.Count}";
+            }
+            #endregion
+
+        #region Where Expression with two fields Method
+            /// <summary>
+            /// select some products its Name starts with L and the cost = 100 
+            /// </summary>
+            public void WhereTwoFields()
+            {
+                string search = "L";
+                decimal cost = 100;
+                if (UseQuerySyntax)
+                {
+                    // Query Syntax
+                    Products = (from prod in Products
+                                where prod.Name.StartsWith(search)&&
+                                      prod.StandardCost > cost 
+                                select prod).ToList();
+                }
+                else
+                {
+                    // Method Syntax
+                    Products = Products.Where(prod => prod.Name.StartsWith(search)&&
+                                prod.StandardCost > 100).ToList();
+                }
+
+                ResultText = $"Total Products: {Products.Count}";
+            }
+            #endregion
+
+        #region FirstMatched
+        /// <summary>
+        /// Select the first matched
+        /// </summary>
+        public void First()
+        {
+            string search = "Red";
+            Product value;
+
+            try
+            {
+                if (UseQuerySyntax)
+                {
+                    //Query Syntax
+                    value = (from prod in Products
+                             select prod).First(prod => prod.Color == search);
+                }
+                else
+                {
+                    //Method Syntax
+                    value = Products.First(prod => prod.Color == search);
+                }
+
+                ResultText = $"Found: {value}";
+            }
+            catch
+            {
+                ResultText = $"Not Found";
+            }
+            
+            Products.Clear();
+        }
+
+        public void FirstOrDefault()
+        {
+            string search = "Red";
+            Product value;
+
+            
+            if (UseQuerySyntax)
+            {
+                //Query Syntax
+                value = (from prod in Products
+                            select prod).FirstOrDefault(prod => prod.Color == search);
+            }
+            else
+            {
+                //Method Syntax
+                value = Products.FirstOrDefault(prod => prod.Color == search);
+            }
+            
+            if(value == null)
+            {
+                ResultText = $"Not Found";
+            }
+            else
+            {
+                ResultText = $"Found: {value}";
+            }
+
+            Products.Clear();
+        }
+        #endregion
+
+        #region LastMatched
+            /// <summary>
+            /// Select the Last matched
+            /// </summary>
+            public void Last()
+            {
+                string search = "Red";
+                Product value;
+
+                try
+                {
+                    if (UseQuerySyntax)
+                    {
+                        //Query Syntax
+                        value = (from prod in Products
+                                 select prod).Last(prod => prod.Color == search);
+                    }
+                    else
+                    {
+                        //Method Syntax
+                        value = Products.Last(prod => prod.Color == search);
+                    }
+
+                    ResultText = $"Found: {value}";
+                }
+                catch
+                {
+                    ResultText = $"Not Found";
+                }
+
+                Products.Clear();
+            }
+
+            public void LastOrDefault()
+            {
+                string search = "Red";
+                Product value;
+
+
+                if (UseQuerySyntax)
+                {
+                    //Query Syntax
+                    value = (from prod in Products
+                             select prod).LastOrDefault(prod => prod.Color == search);
+                }
+                else
+                {
+                    //Method Syntax
+                    value = Products.LastOrDefault(prod => prod.Color == search);
+                }
+
+                if (value == null)
+                {
+                    ResultText = $"Not Found";
+                }
+                else
+                {
+                    ResultText = $"Found: {value}";
+                }
+
+                Products.Clear();
+            }
+            #endregion
+
+        #region Single Matched
+        /// <summary>
+        /// Select the only item matched
+        /// </summary>
+        public void Single()
+        {
+            int search = 706;
+            Product value;
+
+            try
+            {
+                if (UseQuerySyntax)
+                {
+                    //Query Syntax
+                    value = (from prod in Products
+                             select prod).Single(prod => prod.ProductID == search);
+                }
+                else
+                {
+                    //Method Syntax
+                    value = Products.Single(prod => prod.ProductID == search);
+                }
+
+                ResultText = $"Found: {value}";
+            }
+            catch
+            {
+                ResultText = $"Not Found";
+            }
+
+            Products.Clear();
+        }
+
+        public void SingleOrDefault()
+        {
+            int search = 706;
+            Product value;
+
+
+            if (UseQuerySyntax)
+            {
+                //Query Syntax
+                value = (from prod in Products
+                         select prod).SingleOrDefault(prod => prod.ProductID == search);
+            }
+            else
+            {
+                //Method Syntax
+                value = Products.SingleOrDefault(prod => prod.ProductID == search);
+            }
+
+            if (value == null)
+            {
+                ResultText = $"Not Found";
+            }
+            else
+            {
+                ResultText = $"Found: {value}";
+            }
+
+            Products.Clear();
+        }
+        #endregion
+
+        #region ForEach Method
+        /// <summary>
+        /// ForEach allows you to iterate over a collection to perform assignments within each object.
+        /// In this sample, assign the Length of the Name property to a property called NameLength
+        /// When using the Query syntax, assign the result to a temporary variable.
+        /// </summary>
+        public void ForEach()
+        {
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+                Products = (from prod in Products
+                            let temp = prod.NameLength = prod.Name.Length
+                            select prod).ToList();
+            }
+            else
+            {
+                // Method Syntax
+                Products.ForEach(prod => prod.NameLength = prod.Name.Length);
+            }
+
+            ResultText = $"Total Products: {Products.Count}";
+        }
+        #endregion
+
+        #region ForEachCallingMethod Method
+        /// <summary>
+        /// Iterate over each object in the collection and call a method to set a property
+        /// This method passes in each Product object into the SalesForProduct() method
+        /// In the SalesForProduct() method, the total sales for each Product is calculated
+        /// The total is placed into each Product objects' ResultText property
+        /// </summary>
+        public void ForEachCallingMethod()
+        {
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+
+            }
+            else
+            {
+                // Method Syntax
+
+            }
+
+            ResultText = $"Total Products: {Products.Count}";
+        }
+
+        /// <summary>
+        /// Helper method called by LINQ to sum sales for a product
+        /// </summary>
+        /// <param name="prod">A product</param>
+        /// <returns>Total Sales for Product</returns>
+        //private decimal SalesForProduct(Product prod)
+        //{
+        //    return Sales.Where(sale => sale.ProductID == prod.ProductID)
+        //                .Sum(sale => sale.LineTotal);
+        //}
+        #endregion
+
+        #region Take Method
+        /// <summary>
+        /// Use Take() to select a specified number of items from the beginning of a collection
+        /// </summary>
+        public void Take()
+        {
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+
+            }
+            else
+            {
+                // Method Syntax
+
+            }
+
+            ResultText = $"Total Products: {Products.Count}";
+        }
+        #endregion
+
+        #region TakeWhile Method
+        /// <summary>
+        /// Use TakeWhile() to select a specified number of items from the beginning of a collection based on a true condition
+        /// </summary>
+        public void TakeWhile()
+        {
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+
+            }
+            else
+            {
+                // Method Syntax
+
+            }
+
+            ResultText = $"Total Products: {Products.Count}";
+        }
+        #endregion
+
+        #region Skip Method
+        /// <summary>
+        /// Use Skip() to move past a specified number of items from the beginning of a collection
+        /// </summary>
+        public void Skip()
+        {
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+
+            }
+            else
+            {
+                // Method Syntax
+
+            }
+
+            ResultText = $"Total Products: {Products.Count}";
+        }
+        #endregion
+
+        #region SkipWhile Method
+        /// <summary>
+        /// Use SkipWhile() to move past a specified number of items from the beginning of a collection based on a true condition
+        /// </summary>
+        public void SkipWhile()
+        {
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+
+            }
+            else
+            {
+                // Method Syntax
+
+            }
+
+            ResultText = $"Total Products: {Products.Count}";
+        }
+        #endregion
+
+        #region Distinct
+        /// <summary>
+        /// The Distinct() operator finds all unique values within a collection
+        /// In this sample you put distinct product colors into another collection using LINQ
+        /// </summary>
+        public void Distinct()
+        {
+            List<string> colors = new List<string>();
+
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+
+            }
+            else
+            {
+                // Method Syntax
+
+            }
+
+            // Build string of Distinct Colors
+            foreach (var color in colors)
+            {
+                Console.WriteLine($"Color: {color}");
+            }
+            Console.WriteLine($"Total Colors: {colors.Count}");
+
+            // Clear products
+            Products.Clear();
+        }
+        #endregion
+
+    }
 }

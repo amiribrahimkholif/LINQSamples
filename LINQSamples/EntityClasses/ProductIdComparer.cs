@@ -11,7 +11,12 @@ namespace LINQSamples
     {
         public override bool Equals(Product x, Product y)
         {
-            return (x.ProductID == y.ProductID);
+            return (x.ProductID == y.ProductID&&
+                    x.Name == y.Name&&
+                    x.StandardCost == y.StandardCost&&
+                    x.Size == y.Size&&
+                    x.NameLength == y.NameLength&&
+                    x.ListPrice == y.ListPrice);
         }
         public override int GetHashCode([DisallowNull] Product obj)
         {

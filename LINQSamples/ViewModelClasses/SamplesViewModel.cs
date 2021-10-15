@@ -765,5 +765,302 @@ namespace LINQSamples
             Products.Clear();
         }
         #endregion
+
+        #region SequenceEqualIntegers
+        /// <summary>
+        /// Use SequenceEqual() method to check if two collections are equal or not
+        /// </summary>
+        public void SequenceEqualIntegers()
+        {
+            List<int> list1 = new List<int> { 1, 2, 3, 4, 5, 6 };
+            List<int> list2 = new List<int> { 1, 2, 3, 4, 5, 6 };
+            bool value;
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+                value = (from num in list1
+                         select num).SequenceEqual(list2);
+            }
+            else
+            {
+                // Method Syntax
+                value = list1.SequenceEqual(list2);
+            }
+            if(value)
+            {
+                ResultText = $"the two collections are equal";
+            }
+            else
+            {
+                ResultText = $"the two collections are NOT equal";
+            }
+          
+        }
+
+        public void SequenceEqualProducts()
+        {
+            ProductIdComparer pc = new ProductIdComparer();
+            List<Product> list1 = ProductRepository.GetAll();
+            List<Product> list2 = ProductRepository.GetAll();
+            bool value;
+
+            //to test the not equal case
+
+            //list2.RemoveAt(0);
+
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+                value = (from prod in list1
+                         select prod).SequenceEqual(list2, pc);
+            }
+            else
+            {
+                // Method Syntax
+                value = list1.SequenceEqual(list2,pc);
+            }
+            if (value)
+            {
+                ResultText = $"the two collections are equal";
+            }
+            else
+            {
+                ResultText = $"the two collections are NOT equal";
+            }
+
+            Products.Clear();
+        }
+        #endregion
+
+        #region Except
+        /// <summary>
+        /// Use Except() method to return the items that are exist in one collection and ont exist in the other collection
+        /// </summary>
+        public void ExceptIntegers()
+        {
+            List<int> exceptions;
+            List<int> list1 = new List<int> { 1, 2, 3, 4, 5, 6 };
+            List<int> list2 = new List<int> { 4, 5, 6 };
+            
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+                exceptions = (from num in list1
+                         select num).Except(list2).ToList();
+            }
+            else
+            {
+                // Method Syntax
+                exceptions = list1.Except(list2).ToList();
+            }
+
+            ResultText =string.Empty;
+            foreach (var item in exceptions)
+                ResultText += "Number: " + item + Environment.NewLine;
+
+
+            Products.Clear();
+        }
+
+        public void ExceptProducts()
+        {
+            
+            ProductIdComparer pc = new ProductIdComparer();
+            List<Product> list1 = ProductRepository.GetAll();
+            List<Product> list2 = ProductRepository.GetAll();
+
+
+            //to test the not equal case
+
+            list2.RemoveAll(prod => prod.Color == "Black");
+
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+                Products = (from prod in list1
+                         select prod).Except(list2, pc).ToList();
+            }
+            else
+            {
+                // Method Syntax
+                Products = list1.Except(list2, pc).ToList();
+            }
+            ResultText = $"Total products : {Products.Count()}";
+
+            Products.Clear();
+        }
+        #endregion
+
+        #region Intersect
+        /// <summary>
+        /// Use Entersect() method to return the items that are exist both collections
+        /// </summary>
+        public void IntersectIntegers()
+        {
+            List<int> exceptions;
+            List<int> list1 = new List<int> { 1, 2, 3, 4, 5, 6 };
+            List<int> list2 = new List<int> { 4, 5, 6 };
+
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+                exceptions = (from num in list1
+                              select num).Intersect(list2).ToList();
+            }
+            else
+            {
+                // Method Syntax
+                exceptions = list1.Intersect(list2).ToList();
+            }
+
+            ResultText = string.Empty;
+            foreach (var item in exceptions)
+                ResultText += "Number: " + item + Environment.NewLine;
+
+
+            Products.Clear();
+        }
+
+        public void IntersectProducts()
+        {
+
+            ProductIdComparer pc = new ProductIdComparer();
+            List<Product> list1 = ProductRepository.GetAll();
+            List<Product> list2 = ProductRepository.GetAll();
+
+
+            //to test the not equal case
+
+            list2.RemoveAll(prod => prod.Color == "Black");
+
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+                Products = (from prod in list1
+                            select prod).Intersect(list2, pc).ToList();
+            }
+            else
+            {
+                // Method Syntax
+                Products = list1.Intersect(list2, pc).ToList();
+            }
+            ResultText = $"Total products : {Products.Count()}";
+
+            Products.Clear();
+        }
+        #endregion
+
+        #region Union with Union
+        /// <summary>
+        /// Use Union() method to return all the items that are exist in the both collections
+        /// </summary>
+        public void LINQUnionIntergers()
+        {
+            List<int> union;
+            List<int> list1 = new List<int> { 1, 2, 3, 4, 5, 6 };
+            List<int> list2 = new List<int> { 4, 5, 6 };
+
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+                union = (from num in list1
+                              select num).Union(list2).ToList();
+            }
+            else
+            {
+                // Method Syntax
+                union = list1.Union(list2).ToList();
+            }
+
+            ResultText = string.Empty;
+            foreach (var item in union)
+                ResultText += "Number: " + item + Environment.NewLine;
+
+        }
+
+        public void LINQUinonProducts()
+        {
+
+            ProductIdComparer pc = new ProductIdComparer();
+            List<Product> list1 = ProductRepository.GetAll();
+            List<Product> list2 = ProductRepository.GetAll();
+
+
+            //to test the not equal case
+
+            list2.RemoveAll(prod => prod.Color == "Black");
+
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+                Products = (from prod in list1
+                            select prod).Union(list2, pc).ToList();
+            }
+            else
+            {
+                // Method Syntax
+                Products = list1.Union(list2, pc).ToList();
+            }
+            ResultText = $"Total products : {Products.Count()}";
+
+            Products.Clear();
+        }
+        #endregion
+
+        #region Union with Conacat
+        /// <summary>
+        /// Use Union() method to return all the items that are exist in the both collections
+        /// </summary>
+        public void LINQConcatIntergers()
+        {
+            List<int> union;
+            List<int> list1 = new List<int> { 1, 2, 3, 4, 5, 6 };
+            List<int> list2 = new List<int> { 4, 5, 6 };
+
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+                union = (from num in list1
+                         select num).Concat(list2).ToList();
+            }
+            else
+            {
+                // Method Syntax
+                union = list1.Concat(list2).ToList();
+            }
+
+            ResultText = string.Empty;
+            foreach (var item in union)
+                ResultText += "Number: " + item + Environment.NewLine;
+
+        }
+
+        public void LINQConcatProducts()
+        {
+
+            List<Product> list1 = ProductRepository.GetAll();
+            List<Product> list2 = ProductRepository.GetAll();
+
+            //to test the not equal case
+
+            list2.RemoveAll(prod => prod.Color == "Black");
+
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+                Products = (from prod in list1
+                            select prod).Concat(list2).ToList();
+            }
+            else
+            {
+                // Method Syntax
+                Products = list1.Concat(list2).ToList();
+            }
+            ResultText = $"Total products : {Products.Count()}";
+
+            Products.Clear();
+        }
+        #endregion
     }
+
 }

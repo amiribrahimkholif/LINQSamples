@@ -9,17 +9,20 @@ namespace LINQSamples
   public class SamplesViewModel
   {
     
-        #region Constructor
+    #region Constructor
     public SamplesViewModel()
     {
-      // Load all Product Data
-      Products = ProductRepository.GetAll();
+        // Load all Product Data
+        Products = ProductRepository.GetAll();
+        Sales = SalesOrderDetailRepository.GetAll();
     }
     #endregion
 
-        #region Properties
+    #region Properties
     public bool UseQuerySyntax { get; set; }
     public List<Product> Products { get; set; }
+    public List<SalesOrderDetail> Sales { get; set; }
+
     public string ResultText { get; set; }
     #endregion
 
@@ -506,12 +509,14 @@ namespace LINQSamples
             if (UseQuerySyntax)
             {
                 // Query Syntax
-
+                Products = (from prod in Products
+                            let temp = prod.TotalSales = SalesForProduct(prod)
+                            select prod ).ToList();
             }
             else
             {
                 // Method Syntax
-
+                Products.ForEach(prod => prod.TotalSales = SalesForProduct(prod));
             }
 
             ResultText = $"Total Products: {Products.Count}";
@@ -522,11 +527,11 @@ namespace LINQSamples
         /// </summary>
         /// <param name="prod">A product</param>
         /// <returns>Total Sales for Product</returns>
-        //private decimal SalesForProduct(Product prod)
-        //{
-        //    return Sales.Where(sale => sale.ProductID == prod.ProductID)
-        //                .Sum(sale => sale.LineTotal);
-        //}
+        private decimal SalesForProduct(Product prod)
+        {
+            return Sales.Where(sale => sale.ProductID == prod.ProductID)
+                        .Sum(sale => sale.LineTotal);
+        }
         #endregion
 
         #region Take Method
@@ -538,12 +543,16 @@ namespace LINQSamples
             if (UseQuerySyntax)
             {
                 // Query Syntax
-
+                Products = (from prod in Products
+                            orderby prod.Name
+                            select prod)
+                            .Take(5).ToList();
             }
             else
             {
                 // Method Syntax
-
+                Products = Products.OrderBy(prod => prod.Name)
+                            .Take(5).ToList();
             }
 
             ResultText = $"Total Products: {Products.Count}";
@@ -559,12 +568,16 @@ namespace LINQSamples
             if (UseQuerySyntax)
             {
                 // Query Syntax
-
+                Products = (from prod in Products
+                            orderby prod.Name
+                            select prod)
+                            .TakeWhile(prod => prod.Name.StartsWith("A")).ToList();
             }
             else
             {
                 // Method Syntax
-
+                Products = Products.OrderBy(prod => prod.Name)
+                            .TakeWhile(prod => prod.Name.StartsWith("A")).ToList();
             }
 
             ResultText = $"Total Products: {Products.Count}";
@@ -580,12 +593,15 @@ namespace LINQSamples
             if (UseQuerySyntax)
             {
                 // Query Syntax
-
+                Products = (from prod in Products
+                            orderby prod.Name
+                            select prod)
+                            .Skip(20).ToList();
             }
             else
             {
                 // Method Syntax
-
+                Products = Products.OrderBy(prod => prod.Name).Skip(20).ToList();    
             }
 
             ResultText = $"Total Products: {Products.Count}";
@@ -601,12 +617,16 @@ namespace LINQSamples
             if (UseQuerySyntax)
             {
                 // Query Syntax
-
+                Products = (from prod in Products
+                            orderby prod.Name
+                            select prod)
+                            .SkipWhile(prod => prod.Name.StartsWith("A")).ToList();
             }
             else
             {
                 // Method Syntax
-
+                Products = Products.OrderBy(prod => prod.Name)
+                            .SkipWhile(prod => prod.Name.StartsWith("A")).ToList();
             }
 
             ResultText = $"Total Products: {Products.Count}";
@@ -625,12 +645,14 @@ namespace LINQSamples
             if (UseQuerySyntax)
             {
                 // Query Syntax
-
+                colors = (from prod in Products
+                          select prod.Color).Distinct().ToList();
             }
             else
             {
                 // Method Syntax
-
+                colors = Products.Select(prod => prod.Color)
+                            .Distinct().ToList();
             }
 
             // Build string of Distinct Colors

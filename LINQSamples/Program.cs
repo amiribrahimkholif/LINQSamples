@@ -14,8 +14,8 @@ namespace LINQSamples
         };
 
         // Call a sample method
-        vm.LeftOuterJoin();
-        // Display Product Collection
+        vm.GroupBy();
+        // Display Product Collection 
         //foreach (var item in vm.Products) {
         //Console.Write(item.ToString());
         //}

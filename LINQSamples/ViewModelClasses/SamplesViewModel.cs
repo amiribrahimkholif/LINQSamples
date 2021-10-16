@@ -1061,6 +1061,298 @@ namespace LINQSamples
             Products.Clear();
         }
         #endregion
+
+        #region Inner Join
+        /// <summary>
+        /// Use join() method to join two collections base on some ceriteria.
+        /// </summary>
+        public void InnerJoin()
+        {
+            StringBuilder sb = new StringBuilder(2084);
+            int count = 0;
+
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+                var query = (from prod in Products
+                             join sale in Sales
+                             on prod.ProductID equals sale.ProductID
+                             select new
+                             {
+                                 prod.ProductID,
+                                 prod.Name,
+                                 prod.Size,
+                                 prod.Color,
+                                 prod.StandardCost,
+                                 sale.SalesOrderID,
+                                 sale.LineTotal,
+                                 sale.UnitPrice,
+                                 sale.OrderQty
+                             }).ToList();
+
+                foreach (var item in query)
+                {
+                    count++;
+                    sb.AppendLine($"Sales Order : {item.SalesOrderID}");
+                    sb.AppendLine($"Product ID : {item.ProductID}");
+                    sb.AppendLine($"Product Name : {item.Name}");
+                    sb.AppendLine($"Size  : {item.Size}");
+                    sb.AppendLine($"Order Qty : {item.OrderQty}");
+                    sb.AppendLine($"Total : {item.LineTotal:c}");
+
+                }
+                    
+
+            }
+            else
+            {
+                // Method Syntax
+                var query = Products.Join(Sales, prod => prod.ProductID,
+                                sale => sale.ProductID,
+                                (prod, sale) => new
+                                {
+                                    prod.ProductID,
+                                    prod.Name,
+                                    prod.Size,
+                                    prod.Color,
+                                    prod.StandardCost,
+                                    sale.SalesOrderID,
+                                    sale.LineTotal,
+                                    sale.UnitPrice,
+                                    sale.OrderQty
+
+                                });
+                foreach (var item in query)
+                {
+                    count++;
+                    sb.AppendLine($"Sales Order : {item.SalesOrderID}");
+                    sb.AppendLine($"Product ID : {item.ProductID}");
+                    sb.AppendLine($"Product Name : {item.Name}");
+                    sb.AppendLine($"Size  : {item.Size}");
+                    sb.AppendLine($"Order Qty : {item.OrderQty}");
+                    sb.AppendLine($"Total : {item.LineTotal:c}");
+
+                }
+            }
+            
+                ResultText =sb.ToString()+ Environment.NewLine +"Total Sales : "+count;
+
+        }
+        #endregion
+
+        #region Inner Join with two fields
+        /// <summary>
+        /// Use join() method to join two collections base on some ceriteria.
+        /// </summary>
+        public void InnerJoinTwoFields()
+        {
+            StringBuilder sb = new StringBuilder(2084);
+            short qty = 6;
+            int count = 0;
+
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+                var query = (from prod in Products
+                             join sale in Sales on
+                             new { prod.ProductID , Qty = qty}
+                             equals 
+                             new { sale.ProductID, Qty = sale.OrderQty }
+                             select new
+                             {
+                                 prod.ProductID,
+                                 prod.Name,
+                                 prod.Size,
+                                 prod.Color,
+                                 prod.StandardCost,
+                                 sale.SalesOrderID,
+                                 sale.LineTotal,
+                                 sale.UnitPrice,
+                                 sale.OrderQty
+                             }).ToList();
+
+                foreach (var item in query)
+                {
+                    count++;
+                    sb.AppendLine($"Sales Order : {item.SalesOrderID}");
+                    sb.AppendLine($"Product ID : {item.ProductID}");
+                    sb.AppendLine($"Product Name : {item.Name}");
+                    sb.AppendLine($"Size  : {item.Size}");
+                    sb.AppendLine($"Order Qty : {item.OrderQty}");
+                    sb.AppendLine($"Total : {item.LineTotal:c}");
+
+                }
+
+
+            }
+            else
+            {
+                // Method Syntax
+                var query = Products.Join(Sales, prod => new { prod.ProductID , Qty = qty},
+                                sale => new { sale.ProductID , Qty = sale.OrderQty},
+                                (prod, sale) => new
+                                {
+                                    prod.ProductID,
+                                    prod.Name,
+                                    prod.Size,
+                                    prod.Color,
+                                    prod.StandardCost,
+                                    sale.SalesOrderID,
+                                    sale.LineTotal,
+                                    sale.UnitPrice,
+                                    sale.OrderQty
+
+                                });
+                foreach (var item in query)
+                {
+                    count++;
+                    sb.AppendLine($"Sales Order : {item.SalesOrderID}");
+                    sb.AppendLine($"Product ID : {item.ProductID}");
+                    sb.AppendLine($"Product Name : {item.Name}");
+                    sb.AppendLine($"Size  : {item.Size}");
+                    sb.AppendLine($"Order Qty : {item.OrderQty}");
+                    sb.AppendLine($"Total : {item.LineTotal:c}");
+
+                }
+            }
+
+            ResultText = sb.ToString() + Environment.NewLine + "Total Sales : " + count;
+
+        }
+        #endregion
+
+        #region Group Join
+        public void GroupJoin()
+        {
+            StringBuilder sb = new StringBuilder(2084);
+            IEnumerable<ProductSales> grouped;
+            int count = 0;
+
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+                grouped = (from prod in Products
+                             join sale in Sales on
+                             prod.ProductID equals sale.ProductID
+                             into sales
+                             select new ProductSales
+                             {
+                                 Product = prod,
+                                 Sales = sales
+                             });
+
+            }
+            else
+            {
+                // Method Syntax
+                grouped = Products.GroupJoin(Sales ,prod => prod.ProductID, 
+                                sale => sale.ProductID,
+                                (prod, sale) => new ProductSales
+                                {
+                                    Product = prod,
+                                    Sales = sale.ToList()
+                                });
+            }
+
+            foreach (var ps in grouped)
+            {
+                
+                sb.AppendLine($"Product : {ps.Product}");
+                if(ps.Sales.Count() >0)
+                {
+                    sb.AppendLine("    ** Sales **    ");
+                    foreach(var sale in ps.Sales)
+                    {
+                        sb.AppendLine($"     SalesOrder : {sale.SalesOrderID}");
+                        sb.AppendLine($"     Qty : {sale.OrderQty}");
+                        sb.AppendLine($"     Total : {sale.LineTotal}");
+                    }
+                }
+                else
+                {
+                    sb.AppendLine("    ** No Sales **     ");
+                }
+                sb.AppendLine("");              
+            }
+            ResultText = sb.ToString() + Environment.NewLine + "Total Sales : " + count;
+
+        }
+        #endregion
+
+        #region Left Outer Join
+        public void LeftOuterJoin()
+        {
+            StringBuilder sb = new StringBuilder(2084);
+            int count = 0;
+
+            if (UseQuerySyntax)
+            {
+                // Query Syntax
+               var query = (from prod in Products
+                           join sale in Sales on
+                           prod.ProductID equals sale.ProductID
+                           into sales
+                           from sale in sales.DefaultIfEmpty()
+                           select new 
+                           {
+                               prod.ProductID,
+                               prod.Name,
+                               prod.Size,
+                               prod.Color,
+                               prod.StandardCost,
+                               sale?.SalesOrderID,
+                               sale?.LineTotal,
+                               sale?.UnitPrice,
+                               sale?.OrderQty
+                           }).OrderBy(ps => ps.Name);
+                foreach (var item in query)
+                {
+                    count++;
+                    sb.AppendLine($"Sales Order : {item.SalesOrderID}");
+                    sb.AppendLine($"Product ID : {item.ProductID}");
+                    sb.AppendLine($"Product Name : {item.Name}");
+                    sb.AppendLine($"Size  : {item.Size}");
+                    sb.AppendLine($"Order Qty : {item.OrderQty}");
+                    sb.AppendLine($"Total : {item.LineTotal:c}");
+
+                }
+
+            }
+            else
+            {
+                // Method Syntax
+                var query = Products.SelectMany(sale =>Sales.Where(s => sale.ProductID == s.ProductID)
+                                            .DefaultIfEmpty(),
+                                            (prod, sale) => new
+                                            {
+                                                prod.ProductID,
+                                                prod.Name,
+                                                prod.Size,
+                                                prod.Color,
+                                                prod.StandardCost,
+                                                sale?.SalesOrderID,
+                                                sale?.LineTotal,
+                                                sale?.UnitPrice,
+                                                sale?.OrderQty
+                                            }).OrderBy(ps => ps.Name);
+
+                foreach (var item in query)
+                {
+                    count++;
+                    sb.AppendLine($"Sales Order : {item.SalesOrderID}");
+                    sb.AppendLine($"Product ID : {item.ProductID}");
+                    sb.AppendLine($"Product Name : {item.Name}");
+                    sb.AppendLine($"Size  : {item.Size}");
+                    sb.AppendLine($"Order Qty : {item.OrderQty}");
+                    sb.AppendLine($"Total : {item.LineTotal:c}");
+
+                }
+
+            }
+            ResultText = sb.ToString() + Environment.NewLine + "Total Sales : " + count;
+
+        }
+        #endregion
     }
 
 }

@@ -14,12 +14,11 @@ namespace LINQSamples
         };
 
         // Call a sample method
-        //vm.GetAllLooping();
-        vm.LINQConcatProducts();
+        vm.LeftOuterJoin();
         // Display Product Collection
-        foreach (var item in vm.Products) {
-        Console.Write(item.ToString());
-        }
+        //foreach (var item in vm.Products) {
+        //Console.Write(item.ToString());
+        //}
 
         // Display Result Text
         Console.WriteLine(vm.ResultText);
